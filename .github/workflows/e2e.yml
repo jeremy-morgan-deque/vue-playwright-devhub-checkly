@@ -1,0 +1,91 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - uses: browser-actions/setup-chrome@v1
+        id: setup-chrome
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Install Playwright OS deps only (cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps
+
+      - name: Run E2E tests
+        run: npm test
+        env:
+          AXE_CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+          AXE_DEVHUB_API_KEY: ${{ secrets.AXE_DEVHUB_API_KEY_PLAYWRIGHT }}
+          AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT: ${{ secrets.AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT }}
+          AXE_DEVHUB_SERVER_VUE_APP: ${{ secrets.AXE_DEVHUB_SERVER_VUE_APP }}
+
+      - name: Assert accessibility violations
+        run: ./assert-a11y.sh
+        env:
+          AXE_DEVHUB_API_KEY: ${{ secrets.AXE_DEVHUB_API_KEY_PLAYWRIGHT }}
+          AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT: ${{ secrets.AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT }}
+          AXE_DEVHUB_SERVER_VUE_APP: ${{ secrets.AXE_DEVHUB_SERVER_VUE_APP }}
+          GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+  #
+  # Axe Developer Hub GH Action
+  #
+  axe-dev-hub:
+    runs-on: ubuntu-latest
+    needs: playwright
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run axe DevHub action
+        id: axe-devhub-action
+        uses: dequelabs/axe-devhub-action@v1.2.0
+        continue-on-error: true
+        with:
+          api_key: ${{ secrets.AXE_DEVHUB_API_KEY_PLAYWRIGHT }}
+          project_id: ${{ secrets.AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT }}
+      - name: Check for accessibility violations
+        env:
+          OUTCOME: ${{ steps.axe-devhub-action.outcome }}
+          ISSUE_COUNT: ${{ steps.axe-devhub-action.outputs.issue_count }}
+        run: |
+          if [ -z "$ISSUE_COUNT" ]; then
+            echo "::error::axe-devhub-action did not produce an issue_count (outcome: $OUTCOME)"
+            exit 1
+          fi
+          if [ "$ISSUE_COUNT" -gt 0 ]; then
+            echo "::error::$ISSUE_COUNT accessibility violation(s) found"
+            exit 1
+          fi
+          echo "No accessibility violations."

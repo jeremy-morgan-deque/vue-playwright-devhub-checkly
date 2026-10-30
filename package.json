@@ -1,0 +1,21 @@
+{
+  "name": "vue-playwright",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve --port 8082",
+    "build": "vue-cli-service build",
+    "test": "npx playwright test"
+  },
+  "dependencies": {
+    "@axe-core/watcher": "^4.6.0",
+    "core-js": "^3.8.3",
+    "vue": "^3.2.13"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "playwright": "^1.49.1"
+  }
+}
