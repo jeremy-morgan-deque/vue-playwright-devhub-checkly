@@ -4,7 +4,7 @@ const assert = require('assert')
 // Get your axe Developer Hub configuration from environment variables.
 // These must match the env vars set in .github/workflows/e2e.yml.
 const ACCESSIBILITY_API_KEY = process.env.AXE_DEVHUB_API_KEY
-const PROJECT_ID = process.env.AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT
+const PROJECT_ID = process.env.AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT_CHECKLY
 const SERVER_URL = process.env.AXE_DEVHUB_SERVER_VUE_APP || "https://axe.deque.com"
 
 assert(ACCESSIBILITY_API_KEY, 'AXE_DEVHUB_API_KEY is required')
