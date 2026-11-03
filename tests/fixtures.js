@@ -8,7 +8,7 @@ const PROJECT_ID = process.env.AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT_CHECKLY
 const SERVER_URL = process.env.AXE_DEVHUB_SERVER_VUE_APP || "https://axe.deque.com"
 
 assert(ACCESSIBILITY_API_KEY, 'AXE_DEVHUB_API_KEY is required')
-assert(PROJECT_ID, 'AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT is required')
+assert(PROJECT_ID, 'AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT_CHECKLY is required')
 
 module.exports = playwrightTest({
   // axe watcher and devhub configuration

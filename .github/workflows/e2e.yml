@@ -48,14 +48,14 @@ jobs:
         env:
           AXE_CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
           AXE_DEVHUB_API_KEY: ${{ secrets.AXE_DEVHUB_API_KEY_PLAYWRIGHT }}
-          AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT: ${{ secrets.AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT }}
+          AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT_CHECKLY: ${{ secrets.AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT }}
           AXE_DEVHUB_SERVER_VUE_APP: ${{ secrets.AXE_DEVHUB_SERVER_VUE_APP }}
 
       - name: Assert accessibility violations
         run: ./assert-a11y.sh
         env:
           AXE_DEVHUB_API_KEY: ${{ secrets.AXE_DEVHUB_API_KEY_PLAYWRIGHT }}
-          AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT: ${{ secrets.AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT }}
+          AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT_CHECKLY: ${{ secrets.AXE_DEVHUB_PROJECT_KEY_PLAYWRIGHT }}
           AXE_DEVHUB_SERVER_VUE_APP: ${{ secrets.AXE_DEVHUB_SERVER_VUE_APP }}
           GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
