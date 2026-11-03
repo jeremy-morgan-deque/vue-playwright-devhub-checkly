@@ -2,10 +2,12 @@
 const { test, expect } = require('./fixtures');
 
 //
-// Goto locally running Vue instance
+// Go to the app under test. The base URL comes from playwright.config.js:
+// the local Vue dev server by default, or the live site when run on Checkly.
+// './' keeps the GitHub Pages sub-path (/vue-playwright-devhub-checkly/) intact.
 //
 test.beforeEach(async ({ page }) => {
-  await page.goto('http://localhost:8082/?');
+  await page.goto('./');
 });
 
 //
